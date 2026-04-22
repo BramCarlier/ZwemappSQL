@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Zwemapp Student Viewer</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Static viewer</p>
+        <h1>Zwemapp Student Viewer</h1>
+        <p class="subtle">Mobile-first overview of students, schools, classes, levels and moments.</p>
+      </div>
+      <div class="topbar-actions">
+        <button id="themeToggle" class="ghost-btn" type="button" aria-label="Toggle theme">🌙</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="search-wrap">
+        <label class="sr-only" for="searchInput">Search</label>
+        <input id="searchInput" type="search" placeholder="Search student, school, class, level or day">
+      </div>
+      <div class="chips" id="quickStats"></div>
+    </section>
+
+    <nav class="tabs" aria-label="Sections">
+      <button class="tab is-active" data-tab="students">Students</button>
+      <button class="tab" data-tab="schedule">Schedule</button>
+      <button class="tab" data-tab="schools">Schools & classes</button>
+      <button class="tab" data-tab="about">About data</button>
+    </nav>
+
+    <section class="filters card">
+      <div class="filter-grid">
+        <label>
+          <span>School</span>
+          <select id="schoolFilter"><option value="">All schools</option></select>
+        </label>
+        <label>
+          <span>Class</span>
+          <select id="classFilter"><option value="">All classes</option></select>
+        </label>
+        <label>
+          <span>Level / cap</span>
+          <select id="levelFilter"><option value="">All levels</option></select>
+        </label>
+        <label>
+          <span>Day</span>
+          <select id="dayFilter"><option value="">All days</option></select>
+        </label>
+      </div>
+      <div class="filter-row">
+        <label class="toggle">
+          <input id="hiddenClassToggle" type="checkbox">
+          <span>Include hidden classes</span>
+        </label>
+        <button id="resetFilters" class="ghost-btn" type="button">Reset filters</button>
+      </div>
+    </section>
+
+    <main>
+      <section class="tab-panel is-active" id="panel-students">
+        <div class="results-head">
+          <h2>Students</h2>
+          <p id="resultsCount" class="subtle"></p>
+        </div>
+        <div class="card table-card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>School</th>
+                  <th>Class</th>
+                  <th>Level / cap</th>
+                  <th>Moment</th>
+                </tr>
+              </thead>
+              <tbody id="studentsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div id="studentCards" class="student-cards"></div>
+      </section>
+
+      <section class="tab-panel" id="panel-schedule">
+        <div class="results-head">
+          <h2>Schedule</h2>
+          <p class="subtle">Grouped by day and time from the student group.</p>
+        </div>
+        <div id="scheduleGrid" class="schedule-grid"></div>
+      </section>
+
+      <section class="tab-panel" id="panel-schools">
+        <div class="results-head">
+          <h2>Schools & classes</h2>
+          <p class="subtle">Quick relation view per school and class.</p>
+        </div>
+        <div id="schoolBlocks" class="school-blocks"></div>
+      </section>
+
+      <section class="tab-panel" id="panel-about">
+        <div class="card prose">
+          <h2>About this export</h2>
+          <p>This viewer reads a reduced JSON export generated from the provided SQL dump. It contains only the fields needed for read-only browsing.</p>
+          <ul id="aboutList"></ul>
+          <p>The site is static and uses no update or delete API calls, so it can be hosted on GitHub Pages or served as plain files on Forge.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
