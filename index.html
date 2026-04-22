@@ -1,119 +1,697 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Zwemapp Student Viewer</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zwemapp Static Viewer</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --text: #1d2433;
+      --muted: #64708a;
+      --line: #e4e8f0;
+      --brand: #2563eb;
+      --brand-soft: #dbeafe;
+      --chip: #eef2ff;
+      --ok: #0f766e;
+      --warn: #92400e;
+      --shadow: 0 8px 24px rgba(16, 24, 40, .08);
+      --radius: 18px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .wrap {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+    .hero {
+      background: linear-gradient(135deg, #ffffff, #eef4ff);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-size: 1.35rem;
+      margin: 0 0 8px;
+    }
+    .sub {
+      color: var(--muted);
+      font-size: .95rem;
+      line-height: 1.45;
+      margin-bottom: 14px;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .stat {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px;
+    }
+    .stat .num { font-weight: 800; font-size: 1.2rem; }
+    .stat .lbl { color: var(--muted); font-size: .82rem; margin-top: 2px; }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .toolbar {
+      padding: 14px;
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      gap: 10px;
+    }
+    .search {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      padding: 12px 14px;
+      font-size: 1rem;
+      outline: none;
+      background: #fff;
+    }
+    .filters {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    select, button {
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+      background: #fff;
+      color: var(--text);
+      font-size: .95rem;
+    }
+    button {
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .tabs {
+      display: flex;
+      overflow: auto;
+      gap: 8px;
+      padding: 0 14px 14px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #fff, #fbfcff);
+    }
+    .tab {
+      white-space: nowrap;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--muted);
+    }
+    .tab.active {
+      background: var(--brand);
+      border-color: var(--brand);
+      color: white;
+    }
+    .content {
+      display: grid;
+      grid-template-columns: 1fr;
+      min-height: 60vh;
+    }
+    .table-wrap {
+      overflow: auto;
+      padding: 12px;
+    }
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      min-width: 900px;
+    }
+    th, td {
+      text-align: left;
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--line);
+      font-size: .93rem;
+      vertical-align: top;
+    }
+    th {
+      position: sticky;
+      top: 0;
+      background: #fdfefe;
+      z-index: 1;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    tr.clickable { cursor: pointer; }
+    tr.clickable:hover td { background: #f8fbff; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--chip);
+      color: #3730a3;
+      font-size: .82rem;
+      font-weight: 600;
+    }
+    .chip.soft { background: #f3f4f6; color: #374151; }
+    .chip.warn { background: #fff7ed; color: var(--warn); }
+    .detail {
+      border-top: 1px solid var(--line);
+      background: #fbfdff;
+      padding: 16px;
+    }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .detail-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      background: white;
+    }
+    .detail-card h3 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+    }
+    .kv {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 6px 10px;
+      font-size: .92rem;
+    }
+    .kv .k { color: var(--muted); }
+    .empty {
+      padding: 22px;
+      color: var(--muted);
+    }
+    .footer-note {
+      color: var(--muted);
+      font-size: .84rem;
+      padding: 0 14px 14px;
+    }
+    @media (min-width: 768px) {
+      .wrap { padding: 22px; }
+      .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .toolbar {
+        grid-template-columns: 2fr 1fr;
+        align-items: center;
+      }
+      .filters {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+      .detail-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+  </style>
 </head>
 <body>
-  <div class="app-shell">
-    <header class="topbar">
-      <div>
-        <p class="eyebrow">Static viewer</p>
-        <h1>Zwemapp Student Viewer</h1>
-        <p class="subtle">Mobile-first overview of students, schools, classes, levels and moments.</p>
-      </div>
-      <div class="topbar-actions">
-        <button id="themeToggle" class="ghost-btn" type="button" aria-label="Toggle theme">🌙</button>
-      </div>
-    </header>
-
+  <div class="wrap">
     <section class="hero">
-      <div class="search-wrap">
-        <label class="sr-only" for="searchInput">Search</label>
-        <input id="searchInput" type="search" placeholder="Search student, school, class, level or day">
+      <h1>Zwemapp Static Viewer</h1>
+      <div class="sub">
+        Lightweight read-only viewer extracted from the SQL dump. Built for GitHub Pages or a static folder on Forge.
       </div>
-      <div class="chips" id="quickStats"></div>
+      <div class="stats" id="stats"></div>
     </section>
 
-    <nav class="tabs" aria-label="Sections">
-      <button class="tab is-active" data-tab="students">Students</button>
-      <button class="tab" data-tab="schedule">Schedule</button>
-      <button class="tab" data-tab="schools">Schools & classes</button>
-      <button class="tab" data-tab="about">About data</button>
-    </nav>
-
-    <section class="filters card">
-      <div class="filter-grid">
-        <label>
-          <span>School</span>
+    <section class="panel">
+      <div class="toolbar">
+        <input id="search" class="search" placeholder="Search student, school, class, level, day or time…" />
+        <div class="filters">
           <select id="schoolFilter"><option value="">All schools</option></select>
-        </label>
-        <label>
-          <span>Class</span>
           <select id="classFilter"><option value="">All classes</option></select>
-        </label>
-        <label>
-          <span>Level / cap</span>
           <select id="levelFilter"><option value="">All levels</option></select>
-        </label>
-        <label>
-          <span>Day</span>
           <select id="dayFilter"><option value="">All days</option></select>
-        </label>
+          <button id="resetBtn">Reset filters</button>
+        </div>
       </div>
-      <div class="filter-row">
-        <label class="toggle">
-          <input id="hiddenClassToggle" type="checkbox">
-          <span>Include hidden classes</span>
-        </label>
-        <button id="resetFilters" class="ghost-btn" type="button">Reset filters</button>
+
+      <div class="tabs" id="tabs"></div>
+      <div class="content">
+        <div class="table-wrap">
+          <div id="tableRoot"></div>
+        </div>
+        <div id="detailRoot" class="detail" hidden></div>
+      </div>
+      <div class="footer-note">
+        Click rows to inspect linked relations. All data is local from <code>data.json</code>; there are no write calls.
       </div>
     </section>
-
-    <main>
-      <section class="tab-panel is-active" id="panel-students">
-        <div class="results-head">
-          <h2>Students</h2>
-          <p id="resultsCount" class="subtle"></p>
-        </div>
-        <div class="card table-card">
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Student</th>
-                  <th>School</th>
-                  <th>Class</th>
-                  <th>Level / cap</th>
-                  <th>Moment</th>
-                </tr>
-              </thead>
-              <tbody id="studentsTableBody"></tbody>
-            </table>
-          </div>
-        </div>
-        <div id="studentCards" class="student-cards"></div>
-      </section>
-
-      <section class="tab-panel" id="panel-schedule">
-        <div class="results-head">
-          <h2>Schedule</h2>
-          <p class="subtle">Grouped by day and time from the student group.</p>
-        </div>
-        <div id="scheduleGrid" class="schedule-grid"></div>
-      </section>
-
-      <section class="tab-panel" id="panel-schools">
-        <div class="results-head">
-          <h2>Schools & classes</h2>
-          <p class="subtle">Quick relation view per school and class.</p>
-        </div>
-        <div id="schoolBlocks" class="school-blocks"></div>
-      </section>
-
-      <section class="tab-panel" id="panel-about">
-        <div class="card prose">
-          <h2>About this export</h2>
-          <p>This viewer reads a reduced JSON export generated from the provided SQL dump. It contains only the fields needed for read-only browsing.</p>
-          <ul id="aboutList"></ul>
-          <p>The site is static and uses no update or delete API calls, so it can be hosted on GitHub Pages or served as plain files on Forge.</p>
-        </div>
-      </section>
-    </main>
   </div>
 
-  <script src="app.js"></script>
+  <script>
+    const state = {
+      activeTab: 'students',
+      search: '',
+      school: '',
+      classId: '',
+      level: '',
+      day: '',
+      selected: null,
+      data: null,
+    };
+
+    const tabs = [
+      { key: 'students', label: 'Students' },
+      { key: 'classes', label: 'Classes' },
+      { key: 'schools', label: 'Schools' },
+      { key: 'groups', label: 'Groups' },
+      { key: 'levels', label: 'Levels' },
+    ];
+
+    fetch('./data.json')
+      .then(r => r.json())
+      .then(data => {
+        state.data = data;
+        renderStats();
+        renderFilters();
+        renderTabs();
+        render();
+        attachEvents();
+      });
+
+    function attachEvents() {
+      document.getElementById('search').addEventListener('input', e => {
+        state.search = e.target.value.toLowerCase().trim();
+        render();
+      });
+      document.getElementById('schoolFilter').addEventListener('change', e => {
+        state.school = e.target.value;
+        renderFilters();
+        render();
+      });
+      document.getElementById('classFilter').addEventListener('change', e => {
+        state.classId = e.target.value;
+        render();
+      });
+      document.getElementById('levelFilter').addEventListener('change', e => {
+        state.level = e.target.value;
+        render();
+      });
+      document.getElementById('dayFilter').addEventListener('change', e => {
+        state.day = e.target.value;
+        render();
+      });
+      document.getElementById('resetBtn').addEventListener('click', () => {
+        state.search = '';
+        state.school = '';
+        state.classId = '';
+        state.level = '';
+        state.day = '';
+        state.selected = null;
+        document.getElementById('search').value = '';
+        renderFilters();
+        render();
+      });
+    }
+
+    function renderStats() {
+      const s = state.data.summary;
+      const stats = [
+        ['Students', s.students],
+        ['Classes', s.classes],
+        ['Schools', s.schools],
+        ['Groups', s.groups],
+        ['Levels', s.levels],
+        ['Timeslots', s.timeslots],
+        ['Hidden classes', s.hiddenClasses],
+        ['Deleted students', s.deletedStudents],
+      ];
+      document.getElementById('stats').innerHTML = stats.map(([label, value]) => `
+        <div class="stat"><div class="num">${value}</div><div class="lbl">${label}</div></div>
+      `).join('');
+    }
+
+    function uniqueSorted(list, key) {
+      return [...new Map(list.map(item => [item[key], item])).values()]
+        .filter(item => item[key] !== null && item[key] !== undefined && item[key] !== '')
+        .sort((a, b) => String(a[key]).localeCompare(String(b[key]), undefined, { numeric: true, sensitivity: 'base' }));
+    }
+
+    function renderFilters() {
+      const { schools, classes, students } = state.data;
+
+      const schoolOptions = uniqueSorted(schools, 'name');
+      document.getElementById('schoolFilter').innerHTML = `<option value="">All schools</option>` + schoolOptions.map(s =>
+        `<option value="${escapeAttr(s.name)}" ${state.school === s.name ? 'selected' : ''}>${escapeHtml(s.name)}</option>`
+      ).join('');
+
+      const filteredClasses = classes.filter(c => !state.school || c.school === state.school);
+      document.getElementById('classFilter').innerHTML = `<option value="">All classes</option>` + filteredClasses.map(c =>
+        `<option value="${c.id}" ${String(state.classId) === String(c.id) ? 'selected' : ''}>${escapeHtml(c.school)} · ${escapeHtml(c.name)}</option>`
+      ).join('');
+
+      const levelOptions = uniqueSorted(state.data.levels, 'name');
+      document.getElementById('levelFilter').innerHTML = `<option value="">All levels</option>` + levelOptions.map(l =>
+        `<option value="${escapeAttr(l.key)}" ${state.level === l.key ? 'selected' : ''}>${escapeHtml(l.name)}</option>`
+      ).join('');
+
+      const dayOptions = [...new Set(students.map(s => s.day).filter(Boolean))];
+      document.getElementById('dayFilter').innerHTML = `<option value="">All days</option>` + dayOptions.map(day =>
+        `<option value="${escapeAttr(day)}" ${state.day === day ? 'selected' : ''}>${escapeHtml(day)}</option>`
+      ).join('');
+    }
+
+    function renderTabs() {
+      document.getElementById('tabs').innerHTML = tabs.map(tab => `
+        <button class="tab ${state.activeTab === tab.key ? 'active' : ''}" data-tab="${tab.key}">${tab.label}</button>
+      `).join('');
+      document.querySelectorAll('.tab').forEach(btn => btn.addEventListener('click', () => {
+        state.activeTab = btn.dataset.tab;
+        state.selected = null;
+        renderTabs();
+        render();
+      }));
+    }
+
+    function matchesSearch(obj, fields) {
+      if (!state.search) return true;
+      const hay = fields.map(f => obj[f]).filter(Boolean).join(' ').toLowerCase();
+      return hay.includes(state.search);
+    }
+
+    function filteredStudents() {
+      return state.data.students.filter(s => {
+        if (state.school && s.school !== state.school) return false;
+        if (state.classId && String(s.classId) !== String(state.classId)) return false;
+        if (state.level && s.levelKey !== state.level) return false;
+        if (state.day && s.day !== state.day) return false;
+        return matchesSearch(s, ['name','school','class','level','day','time','moment']);
+      });
+    }
+
+    function filteredClasses() {
+      return state.data.classes.filter(c => {
+        if (state.school && c.school !== state.school) return false;
+        if (state.classId && String(c.id) !== String(state.classId)) return false;
+        if (state.day && c.day !== state.day) return false;
+        return matchesSearch(c, ['name','school','moment']);
+      });
+    }
+
+    function filteredSchools() {
+      return state.data.schools.filter(s => matchesSearch(s, ['name','key']));
+    }
+
+    function filteredGroups() {
+      return state.data.groups.filter(g => {
+        if (state.level && g.levelKey !== state.level) return false;
+        if (state.day && g.day !== state.day) return false;
+        return matchesSearch(g, ['level','moment']);
+      });
+    }
+
+    function filteredLevels() {
+      return state.data.levels.filter(l => {
+        if (state.level && l.key !== state.level) return false;
+        return matchesSearch(l, ['name','key']);
+      });
+    }
+
+    function render() {
+      const root = document.getElementById('tableRoot');
+      let rows = [];
+      if (state.activeTab === 'students') rows = filteredStudents();
+      if (state.activeTab === 'classes') rows = filteredClasses();
+      if (state.activeTab === 'schools') rows = filteredSchools();
+      if (state.activeTab === 'groups') rows = filteredGroups();
+      if (state.activeTab === 'levels') rows = filteredLevels();
+
+      if (!rows.length) {
+        root.innerHTML = `<div class="empty">No results for the current filters.</div>`;
+        renderDetail(null);
+        return;
+      }
+
+      if (state.activeTab === 'students') {
+        root.innerHTML = tableHtml(
+          ['Student','School','Class','Level','Moment','Flags'],
+          rows.map(r => ({
+            id: r.id,
+            html: `
+              <td><strong>${escapeHtml(r.name)}</strong></td>
+              <td>${escapeHtml(r.school || '')}</td>
+              <td>${escapeHtml(r.class || '')}</td>
+              <td>${chip(r.level || '—')}</td>
+              <td>${escapeHtml(r.moment || '—')}</td>
+              <td>${r.classHidden ? '<span class="chip warn">Hidden class</span>' : ''} ${r.deleted ? '<span class="chip soft">Deleted</span>' : ''}</td>
+            `
+          }))
+        );
+      } else if (state.activeTab === 'classes') {
+        root.innerHTML = tableHtml(
+          ['School','Class','Moment','Students','Flags'],
+          rows.map(r => ({
+            id: r.id,
+            html: `
+              <td>${escapeHtml(r.school || '')}</td>
+              <td><strong>${escapeHtml(r.name)}</strong></td>
+              <td>${escapeHtml(r.moment || '—')}</td>
+              <td>${r.studentCount}</td>
+              <td>${r.hidden ? '<span class="chip warn">Hidden</span>' : ''}</td>
+            `
+          }))
+        );
+      } else if (state.activeTab === 'schools') {
+        root.innerHTML = tableHtml(
+          ['School','Key','Classes','Students'],
+          rows.map(r => ({
+            id: r.id,
+            html: `
+              <td><strong>${escapeHtml(r.name)}</strong></td>
+              <td>${chip(r.key)}</td>
+              <td>${r.classCount}</td>
+              <td>${r.studentCount}</td>
+            `
+          }))
+        );
+      } else if (state.activeTab === 'groups') {
+        root.innerHTML = tableHtml(
+          ['Group ID','Level','Moment','Students'],
+          rows.map(r => ({
+            id: r.id,
+            html: `
+              <td><strong>#${r.id}</strong></td>
+              <td>${chip(r.level || '—')}</td>
+              <td>${escapeHtml(r.moment || '—')}</td>
+              <td>${r.studentCount}</td>
+            `
+          }))
+        );
+      } else if (state.activeTab === 'levels') {
+        root.innerHTML = tableHtml(
+          ['Level','Key','Students'],
+          rows.map(r => ({
+            id: r.id,
+            html: `
+              <td><strong>${escapeHtml(r.name)}</strong></td>
+              <td>${chip(r.key)}</td>
+              <td>${r.studentCount}</td>
+            `
+          }))
+        );
+      }
+
+      document.querySelectorAll('tr.clickable').forEach(tr => {
+        tr.addEventListener('click', () => {
+          const id = tr.dataset.id;
+          state.selected = { tab: state.activeTab, id };
+          renderDetail(findRecord(state.activeTab, id));
+        });
+      });
+
+      renderDetail(findRecord(state.activeTab, state.selected?.id));
+    }
+
+    function findRecord(tab, id) {
+      if (!id) return null;
+      return state.data[tab].find(item => String(item.id) === String(id)) || null;
+    }
+
+    function renderDetail(record) {
+      const root = document.getElementById('detailRoot');
+      if (!record) {
+        root.hidden = true;
+        root.innerHTML = '';
+        return;
+      }
+      root.hidden = false;
+
+      if (state.activeTab === 'students') {
+        const classmates = state.data.students.filter(s => s.classId === record.classId).length;
+        const sameGroup = record.groupId ? state.data.students.filter(s => s.groupId === record.groupId).length : 0;
+        root.innerHTML = `
+          <div class="detail-grid">
+            <div class="detail-card">
+              <h3>Student</h3>
+              <div class="kv">
+                <div class="k">Name</div><div>${escapeHtml(record.name)}</div>
+                <div class="k">School</div><div>${escapeHtml(record.school || '—')}</div>
+                <div class="k">Class</div><div>${escapeHtml(record.class || '—')}</div>
+                <div class="k">Level</div><div>${escapeHtml(record.level || '—')}</div>
+                <div class="k">Moment</div><div>${escapeHtml(record.moment || '—')}</div>
+                <div class="k">Group ID</div><div>${record.groupId ? '#' + record.groupId : '—'}</div>
+              </div>
+            </div>
+            <div class="detail-card">
+              <h3>Relations</h3>
+              <div class="kv">
+                <div class="k">Class size</div><div>${classmates}</div>
+                <div class="k">Group size</div><div>${sameGroup || '—'}</div>
+                <div class="k">Class hidden</div><div>${record.classHidden ? 'Yes' : 'No'}</div>
+                <div class="k">Deleted row</div><div>${record.deleted ? 'Yes' : 'No'}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      if (state.activeTab === 'classes') {
+        const students = state.data.students.filter(s => s.classId === record.id);
+        root.innerHTML = `
+          <div class="detail-grid">
+            <div class="detail-card">
+              <h3>Class</h3>
+              <div class="kv">
+                <div class="k">School</div><div>${escapeHtml(record.school)}</div>
+                <div class="k">Class</div><div>${escapeHtml(record.name)}</div>
+                <div class="k">Moment</div><div>${escapeHtml(record.moment || '—')}</div>
+                <div class="k">Students</div><div>${students.length}</div>
+                <div class="k">Hidden</div><div>${record.hidden ? 'Yes' : 'No'}</div>
+              </div>
+            </div>
+            <div class="detail-card">
+              <h3>Top levels in class</h3>
+              ${levelBreakdown(students)}
+            </div>
+          </div>
+        `;
+      }
+
+      if (state.activeTab === 'schools') {
+        const classes = state.data.classes.filter(c => c.schoolId === record.id);
+        const students = state.data.students.filter(s => s.schoolId === record.id);
+        root.innerHTML = `
+          <div class="detail-grid">
+            <div class="detail-card">
+              <h3>School</h3>
+              <div class="kv">
+                <div class="k">Name</div><div>${escapeHtml(record.name)}</div>
+                <div class="k">Key</div><div>${escapeHtml(record.key)}</div>
+                <div class="k">Classes</div><div>${classes.length}</div>
+                <div class="k">Students</div><div>${students.length}</div>
+              </div>
+            </div>
+            <div class="detail-card">
+              <h3>Levels in school</h3>
+              ${levelBreakdown(students)}
+            </div>
+          </div>
+        `;
+      }
+
+      if (state.activeTab === 'groups') {
+        const students = state.data.students.filter(s => s.groupId === record.id);
+        root.innerHTML = `
+          <div class="detail-grid">
+            <div class="detail-card">
+              <h3>Group</h3>
+              <div class="kv">
+                <div class="k">Group ID</div><div>#${record.id}</div>
+                <div class="k">Level</div><div>${escapeHtml(record.level || '—')}</div>
+                <div class="k">Moment</div><div>${escapeHtml(record.moment || '—')}</div>
+                <div class="k">Students</div><div>${students.length}</div>
+              </div>
+            </div>
+            <div class="detail-card">
+              <h3>Linked students</h3>
+              <div>${students.slice(0, 20).map(s => `<div>${escapeHtml(s.name)} <span class="chip soft">${escapeHtml(s.school || '')} · ${escapeHtml(s.class || '')}</span></div>`).join('') || '<div class="empty">No linked students.</div>'}</div>
+            </div>
+          </div>
+        `;
+      }
+
+      if (state.activeTab === 'levels') {
+        const students = state.data.students.filter(s => s.levelId === record.id);
+        const groups = state.data.groups.filter(g => g.levelId === record.id);
+        root.innerHTML = `
+          <div class="detail-grid">
+            <div class="detail-card">
+              <h3>Level</h3>
+              <div class="kv">
+                <div class="k">Name</div><div>${escapeHtml(record.name)}</div>
+                <div class="k">Key</div><div>${escapeHtml(record.key)}</div>
+                <div class="k">Students</div><div>${students.length}</div>
+                <div class="k">Groups</div><div>${groups.length}</div>
+              </div>
+            </div>
+            <div class="detail-card">
+              <h3>Common moments</h3>
+              ${momentBreakdown(groups)}
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    function levelBreakdown(students) {
+      const counts = {};
+      students.forEach(s => {
+        const key = s.level || 'Unknown';
+        counts[key] = (counts[key] || 0) + 1;
+      });
+      const items = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0, 10);
+      if (!items.length) return '<div class="empty">No data.</div>';
+      return items.map(([name, count]) => `<div>${chip(name)} <strong>${count}</strong></div>`).join('');
+    }
+
+    function momentBreakdown(groups) {
+      const counts = {};
+      groups.forEach(g => {
+        const key = g.moment || 'Unknown';
+        counts[key] = (counts[key] || 0) + 1;
+      });
+      const items = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0, 10);
+      if (!items.length) return '<div class="empty">No data.</div>';
+      return items.map(([name, count]) => `<div>${chip(name)} <strong>${count}</strong></div>`).join('');
+    }
+
+    function tableHtml(headers, rows) {
+      return `
+        <table>
+          <thead><tr>${headers.map(h => `<th>${escapeHtml(h)}</th>`).join('')}</tr></thead>
+          <tbody>
+            ${rows.map(r => `<tr class="clickable" data-id="${r.id}">${r.html}</tr>`).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function chip(text) {
+      return `<span class="chip">${escapeHtml(text)}</span>`;
+    }
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;', "'": '&#39;'}[s]));
+    }
+    function escapeAttr(value) {
+      return escapeHtml(value);
+    }
+  </script>
 </body>
 </html>

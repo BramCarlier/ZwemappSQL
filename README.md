@@ -1,36 +1,27 @@
-# Zwemapp Static Student Viewer
+# Zwemapp Static Viewer
 
-This package contains a static mobile-first viewer generated from the uploaded SQL dump.
+This folder contains a lightweight, read-only viewer extracted from the SQL dump.
 
-## Included
-- `index.html`
-- `styles.css`
-- `app.js`
-- `data/zwemapp-view.json`
+## Files
+- `index.html` — static mobile-first viewer
+- `data.json` — distilled data subset used by the viewer
 
 ## What it shows
 - student name
-- school name
-- class name
-- group / level / cap
-- group moment (day + time)
-- class moment
+- school and class
+- linked group / level
+- group/class moment (day + time)
+- filterable tables for students, classes, schools, groups, and levels
 
-## Features
-- search
-- filters
-- tabs
-- mobile cards + desktop table
-- schedule grouping
-- school/class relation overview
-- static hosting only (no update/delete API calls)
-
-## Hosting
+## Deploy
 ### GitHub Pages
-Upload the contents of this folder to a repo and enable Pages.
+Serve this folder as-is.
 
-### Laravel Forge / any web server
-Serve the folder as static files. The app uses relative paths.
+### Laravel Forge
+Copy the folder into a public directory, for example:
+- `/home/forge/your-site/public/zwemapp-viewer/`
 
-## Notes
-The JSON export only contains the reduced fields needed for read-only browsing.
+Then open:
+- `/zwemapp-viewer/index.html`
+
+No API or write calls are used.
